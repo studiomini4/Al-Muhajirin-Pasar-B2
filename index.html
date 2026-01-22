@@ -168,21 +168,21 @@
         let currentPlayingSholat = null;
         let alarmSettings = { Subuh: { active: true, volume: 1.0 }, Dzuhur: { active: true, volume: 1.0 }, Ashar: { active: true, volume: 1.0 }, Maghrib: { active: true, volume: 1.0 }, Isya: { active: true, volume: 1.0 } };
 
-        // FUNGSI BARU: DETEKSI GPS + AMBIL NAMA ALAMAT
         function getLokasiOtomatis() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     async (p) => {
                         const lat = p.coords.latitude;
                         const lon = p.coords.longitude;
-                        
                         fetchJadwal(lat, lon);
-
                         try {
                             const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
                             const data = await response.json();
-                            const namaTempat = data.address.village || data.address.suburb || data.address.city_district || data.address.city || "Lokasi Terdeteksi";
-                            document.getElementById('lokasi-nama').innerText = `📍 LOKASI: ${namaTempat.toUpperCase()}`;
+                            const desa = data.address.village || data.address.suburb || "";
+                            const kec = data.address.city_district || data.address.town || "";
+                            const kab = data.address.city || data.address.county || "";
+                            const namaTempat = `${desa} ${kec} ${kab}`.trim();
+                            document.getElementById('lokasi-nama').innerText = `📍 LOKASI: ${namaTempat ? namaTempat.toUpperCase() : "GPS AKTIF"}`;
                         } catch (e) {
                             document.getElementById('lokasi-nama').innerText = "📍 LOKASI: GPS AKTIF";
                         }
