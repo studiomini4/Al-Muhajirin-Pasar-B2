@@ -198,6 +198,19 @@
         let jadwalHariIni = {};
         let alarmSettings = { Subuh: { active: true, volume: 1.0 }, Dzuhur: { active: true, volume: 1.0 }, Ashar: { active: true, volume: 1.0 }, Maghrib: { active: true, volume: 1.0 }, Isya: { active: true, volume: 1.0 } };
 
+        // --- FUNGSI MENDAPATKAN NAMA WILAYAH ---
+        async function getNamaWilayah(lat, lon) {
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+                const data = await res.json();
+                // Mengambil nama desa, kelurahan, atau kota
+                const wilayah = data.address.village || data.address.suburb || data.address.city || data.address.town || "Lokasi Terdeteksi";
+                document.getElementById('lokasi-nama').innerText = `📍 LOKASI: ${wilayah.toUpperCase()}`;
+            } catch (e) {
+                document.getElementById('lokasi-nama').innerText = "📍 LOKASI: GPS AKTIF";
+            }
+        }
+
         // --- FUNGSI KALENDER ---
         async function bukaKalender() {
             const list = document.getElementById('isi-kalender');
@@ -238,10 +251,21 @@
         function getLokasiOtomatis() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    async (p) => { fetchJadwal(p.coords.latitude, p.coords.longitude); document.getElementById('lokasi-nama').innerText = "📍 LOKASI: GPS AKTIF"; },
-                    () => fetchJadwal(DEF_LAT, DEF_LON)
+                    async (p) => { 
+                        const lat = p.coords.latitude;
+                        const lon = p.coords.longitude;
+                        fetchJadwal(lat, lon); 
+                        getNamaWilayah(lat, lon); // Mendeteksi nama wilayah
+                    },
+                    () => {
+                        fetchJadwal(DEF_LAT, DEF_LON);
+                        document.getElementById('lokasi-nama').innerText = "📍 BERO JAYA TIMUR (DEFAULT)";
+                    }
                 );
-            } else { fetchJadwal(DEF_LAT, DEF_LON); }
+            } else { 
+                fetchJadwal(DEF_LAT, DEF_LON);
+                document.getElementById('lokasi-nama').innerText = "📍 BERO JAYA TIMUR (DEFAULT)";
+            }
         }
 
         async function fetchJadwal(lat, lon) {
