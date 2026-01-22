@@ -122,7 +122,22 @@
             </div>
         </div>
     </header>
-
+<div id="modal-audio" class="fixed inset-0 z-[5000] flex items-center justify-center bg-black/90 backdrop-blur-sm">
+    <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl text-center max-w-sm mx-4">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+        </div>
+        <h3 class="text-xl font-black text-green-900 mb-2">Aktifkan Suara Adzan?</h3>
+        <p class="text-gray-500 mb-8 text-sm leading-relaxed">Apakah Anda ingin suara adzan otomatis berkumandang saat waktu sholat tiba?</p>
+        
+        <div class="flex flex-col gap-3">
+            <button onclick="pilihAudio(true)" class="w-full bg-green-600 text-white py-4 rounded-2xl font-bold shadow-lg hover:bg-green-700 transition-all uppercase tracking-wider">Ya, Aktifkan</button>
+            <button onclick="pilihAudio(false)" class="w-full bg-gray-100 text-gray-500 py-4 rounded-2xl font-bold hover:bg-gray-200 transition-all uppercase tracking-wider">Tidak, Matikan</button>
+        </div>
+    </div>
+</div>    
     <main class="max-w-2xl mx-auto mt-6 px-4 flex-grow w-full">
         <button onclick="stopAdzan()" id="btnStop" class="hidden w-full mb-6 bg-red-600 text-white py-4 rounded-2xl font-bold animate-pulse shadow-lg uppercase tracking-widest text-sm">Hentikan Suara Adzan</button>
 
@@ -142,7 +157,7 @@
                 <h2 class="text-2xl font-black text-green-900 mb-4 border-b-2 border-yellow-400 inline-block">Profil & Sejarah</h2>
                 <div class="text-gray-700 leading-relaxed space-y-4 text-sm sm:text-base">
                     <p>Masjid Al-Muhajirin berlokasi di RT. 29 Dusun V Desa Bero Jaya Timur.</p>
-                    <p>Masjid Al Muhajirin ini sudah ada sejak 20 tahun yang lalu. Masjid yang tanahnya waqaf dari keluarga Bapak Fulan didasari dengan rasa ketaqwaan kepada Allah. Masjid ini bukan milik golongan tertentu, masjid milik umat islam.</p>
+                    <p>Masjid Al Muhajirin ini sudah ada sejak 20 tahun yang lalu. Masjid yang berdiri diatas tanah waqaf dari keluarga Bapak Fulan yang didasari dengan rasa ketaqwaan kepada Allah. </p>
                 </div>
             </div>
         </div>
@@ -162,17 +177,18 @@
             <div class="card-glass p-8 rounded-[2.5rem] shadow-xl text-center">
                 <h2 class="text-2xl font-black text-green-900 mb-2">Infaq & Sedekah</h2>
                 <div class="bg-green-50 p-6 rounded-2xl border border-green-100 w-full text-center">
-                    <p class="text-[10px] text-green-600 font-bold uppercase tracking-widest mb-3">BANK MANDIRI</p>
+                    <p class="text-[10px] text-green-600 font-bold uppercase tracking-widest mb-3">SALURKAN HARTA TERBAIK ANDA UNTUK OPERASIONAL DAN PEMBANGUNAN MASJID DI REKENING BANK MANDIRI INI :</p>
                     <p class="text-2xl font-black text-green-900 tracking-tighter mb-4">113 00 1956957 7</p>
+                    <p class="text-[10px] text-green-600 font-bold uppercase tracking-widest mb-3">Atas Nama :</p>
                     <p class="text-xl font-black text-green-900 uppercase">MASJID AL MUHAJIRIN</p>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="text-center py-6 mt-10">
+    <footer class="text-center py-5 mt-9">
         <p class="text-white text-sm drop-shadow-md">Sumber : <span class="text-yellow-400 font-bold">aladhan.com 2026</span></p>
-        <p class="text-white text-sm drop-shadow-md">Admin : <span class="text-yellow-400 font-bold">Jamil</span></p>
+        <p class="text-white text-sm drop-shadow-md">Admin Web : <span class="text-yellow-400 font-bold">Jamil</span></p>
     </footer>
 
     <script>
@@ -333,7 +349,34 @@
                 cont.innerHTML = '<p class="text-center py-10 text-red-500 font-bold">Gagal memuat ayat. Periksa koneksi internet.</p>';
             }
         }
+function pilihAudio(setuju) {
+    const audio = document.getElementById('adzanAudio');
+    const modal = document.getElementById('modal-audio');
 
+    if (setuju) {
+        // Pancing izin browser dengan memutar audio sunyi
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            alert("Suara Adzan Berhasil Diaktifkan");
+        }).catch(e => console.log("Izin ditunda"));
+        
+        // Pastikan semua setting alarm aktif
+        for (let key in alarmSettings) {
+            alarmSettings[key].active = true;
+        }
+    } else {
+        // Matikan semua setting alarm jika pilih "Tidak"
+        for (let key in alarmSettings) {
+            alarmSettings[key].active = false;
+        }
+        alert("Suara Adzan Dinonaktifkan");
+    }
+
+    // Hilangkan modal dan tampilkan jadwal
+    modal.style.display = 'none';
+    displayJadwal(jadwalHariIni); // Refresh tampilan jadwal untuk update posisi switch
+}
         // Jalankan fungsi saat window selesai dimuat
         window.onload = () => {
             fetchDailyHadits();
