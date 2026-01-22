@@ -162,23 +162,33 @@
     </footer>
 
     <script>
-        // Koordinat Default Tungkal Jaya
         const DEF_LAT = -2.3658;
         const DEF_LON = 103.7844;
         let jadwalHariIni = {};
         let currentPlayingSholat = null;
         let alarmSettings = { Subuh: { active: true, volume: 1.0 }, Dzuhur: { active: true, volume: 1.0 }, Ashar: { active: true, volume: 1.0 }, Maghrib: { active: true, volume: 1.0 }, Isya: { active: true, volume: 1.0 } };
 
-        // LOGIKA DETEKSI LOKASI
+        // FUNGSI BARU: DETEKSI GPS + AMBIL NAMA ALAMAT
         function getLokasiOtomatis() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    (p) => {
-                        document.getElementById('lokasi-nama').innerText = "📍 Lokasi: Deteksi GPS Aktif";
-                        fetchJadwal(p.coords.latitude, p.coords.longitude);
+                    async (p) => {
+                        const lat = p.coords.latitude;
+                        const lon = p.coords.longitude;
+                        
+                        fetchJadwal(lat, lon);
+
+                        try {
+                            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                            const data = await response.json();
+                            const namaTempat = data.address.village || data.address.suburb || data.address.city_district || data.address.city || "Lokasi Terdeteksi";
+                            document.getElementById('lokasi-nama').innerText = `📍 LOKASI: ${namaTempat.toUpperCase()}`;
+                        } catch (e) {
+                            document.getElementById('lokasi-nama').innerText = "📍 LOKASI: GPS AKTIF";
+                        }
                     },
                     () => {
-                        document.getElementById('lokasi-nama').innerText = "📍 Lokasi: Kec. Tungkal Jaya (Default)";
+                        document.getElementById('lokasi-nama').innerText = "📍 LOKASI: TUNGKAL JAYA (DEFAULT)";
                         fetchJadwal(DEF_LAT, DEF_LON);
                     }
                 );
@@ -303,7 +313,7 @@
         initQuran();
         updateTime();
         setInterval(updateTime, 1000);
-        getLokasiOtomatis(); // Jalankan deteksi lokasi
+        getLokasiOtomatis();
     </script>
 </body>
 </html>
