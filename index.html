@@ -105,9 +105,14 @@
         <div class="max-w-2xl mx-auto">
             <h1 class="text-3xl font-bold mb-1 uppercase tracking-wider">MASJID AL MUHAJIRIN</h1>
             <div class="mb-4 text-yellow-400 text-sm font-semibold italic">Pasar B2, RT. 29 Dusun V Desa Bero Jaya Timur</div>
+            
             <div class="mb-6">
                 <p id="jam" class="text-7xl font-extrabold tracking-tighter drop-shadow-lg">00:00</p>
-                <p id="detik" class="text-sm font-light opacity-80 mt-[-5px]">-- detik</p>
+                <div class="flex justify-center gap-2 items-center mt-1">
+                    <p id="detik" class="text-sm font-light opacity-80 uppercase tracking-widest">-- DETIK</p>
+                    <span class="text-yellow-400">|</span>
+                    <p id="next-sholat-countdown" class="text-sm font-bold text-yellow-300 uppercase tracking-widest">--:--:-- MENUJU ADZAN</p>
+                </div>
                 <p id="lokasi-nama" class="text-[10px] uppercase tracking-widest mt-2 text-yellow-200 font-bold">📍 Mendeteksi Lokasi...</p>
             </div>
             
@@ -253,7 +258,48 @@
             const jamSekarang = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
             document.getElementById('jam').innerText = jamSekarang;
             document.getElementById('detik').innerText = now.getSeconds() + " detik";
+            
             if (now.getSeconds() === 0) cekAlarm(jamSekarang);
+            updateCountdown();
+        }
+
+        function updateCountdown() {
+            if (!jadwalHariIni.Fajr) return;
+            const now = new Date();
+            const list = [
+                {n: 'Subuh', t: jadwalHariIni.Fajr},
+                {n: 'Dzuhur', t: jadwalHariIni.Dhuhr},
+                {n: 'Ashar', t: jadwalHariIni.Asr},
+                {n: 'Maghrib', t: jadwalHariIni.Maghrib},
+                {n: 'Isya', t: jadwalHariIni.Isha}
+            ];
+
+            let nextSholat = null;
+            for (let s of list) {
+                const [h, m] = s.t.split(':');
+                const sDate = new Date();
+                sDate.setHours(h, m, 0);
+                if (sDate > now) {
+                    nextSholat = sDate;
+                    break;
+                }
+            }
+
+            // Jika semua waktu sholat hari ini lewat, targetkan Subuh besok
+            if (!nextSholat) {
+                const [h, m] = list[0].t.split(':');
+                nextSholat = new Date();
+                nextSholat.setDate(nextSholat.getDate() + 1);
+                nextSholat.setHours(h, m, 0);
+            }
+
+            const diff = nextSholat - now;
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('next-sholat-countdown').innerText = 
+                `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')} MENUJU ADZAN`;
         }
 
         function cekAlarm(waktu) {
@@ -278,11 +324,14 @@
 
         async function fetchDailyHadits() {
             try {
-                const day = new Date().getDate();
-                const res = await fetch(`https://api.hadits.gading.dev/books/bukhari/${day + 20}`);
+                // Mengambil hadits Arbain secara acak
+                const res = await fetch(`https://api.dikiotang.com/hadits/arbain`);
                 const json = await res.json();
-                document.getElementById('hadits-text').innerText = `HADITS HARI INI: "${json.data.contents.id}"`;
-            } catch (e) { document.getElementById('hadits-text').innerText = "Kebersihan adalah sebagian dari iman."; }
+                const randomHadits = json.data[Math.floor(Math.random() * json.data.length)];
+                document.getElementById('hadits-text').innerText = `HADITS HARI INI: "${randomHadits.indo}" — (HR. ${randomHadits.hr})`;
+            } catch (e) {
+                document.getElementById('hadits-text').innerText = "HADITS: Senyummu di hadapan saudaramu adalah sedekah. (HR. Tirmidzi)";
+            }
         }
 
         function switchTab(tab) {
