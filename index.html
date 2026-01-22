@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masjid Al-Muhajirin - Digital</title>
+    
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Al-Muhajirin">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
@@ -40,7 +49,6 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* MODAL KALENDER */
         #modal-kalender {
             display: none;
             position: fixed;
@@ -120,7 +128,7 @@
             <div class="mb-6">
                 <p id="jam" class="text-7xl font-extrabold tracking-tighter drop-shadow-lg">00:00</p>
                 <p id="detik" class="text-sm font-light opacity-80 mt-[-5px]">-- detik</p>
-                <p id="lokasi-nama" class="text-[10px] uppercase tracking-widest mt-2 text-yellow-200 font-bold">📍 Mendeteksi Lokasi...</p>
+                <p id="lokasi-nama" class="text-[10px] uppercase tracking-widest mt-2 text-yellow-200 font-bold">📍 Mendeteksi Wilayah...</p>
             </div>
             
             <div onclick="bukaKalender()" class="glass-effect rounded-2xl py-3 px-4 inline-block min-w-[85%] active:scale-95 transition-transform">
@@ -154,8 +162,7 @@
                 <h2 class="text-2xl font-black text-green-900 mb-4 border-b-2 border-yellow-400 inline-block">Profil & Sejarah</h2>
                 <div class="text-gray-700 leading-relaxed space-y-4 text-sm sm:text-base">
                     <p>Masjid Al-Muhajirin berlokasi di RT. 29 Dusun V Desa Bero Jaya Timur.</p>
-                    <p>Masjid Al Muhajirin ini sudah ada sejak 20 tahun yang lalu. Masjid yang tanahnya waqaf dari keluarga Bapak Fulan (kami tidak menyebutkan namanya) didasari dengan rasa ketaqwaan kepada Allah. Surat Waqaf yang di tanda tangani oleh pewaqaf, Kepala Desa pada saat itu Bapak Suparji, dan Atas nama jamaah/Imam Masjid Bapak Imam Rohani. Masjid ini bukan milik golongan tertentu, masjid milik umat islam. Siapa saja memiliki hak pakai dan kewajiban yang sama terhadap bangunan dan fasilitas yang ada di masjid. Jadi semua umat islam boleh ikut memakmurkan masjid ini semua umat islam memiliki kewajiban menjaga keamanan dan kebersihan masjid ini.</p>
-                    <p>Visi dan Misi Masjid : tentunya memiliki visi dan misi yang sama dengan masjid-masjid yang ada di Indonesia</p>
+                    <p>Masjid Al Muhajirin ini sudah ada sejak 20 tahun yang lalu. Masjid yang tanahnya waqaf dari keluarga Bapak Fulan didasari dengan rasa ketaqwaan kepada Allah. Masjid ini bukan milik golongan tertentu, masjid milik umat islam.</p>
                 </div>
             </div>
         </div>
@@ -198,48 +205,36 @@
         let jadwalHariIni = {};
         let alarmSettings = { Subuh: { active: true, volume: 1.0 }, Dzuhur: { active: true, volume: 1.0 }, Ashar: { active: true, volume: 1.0 }, Maghrib: { active: true, volume: 1.0 }, Isya: { active: true, volume: 1.0 } };
 
-        // --- FUNGSI MENDAPATKAN NAMA WILAYAH ---
+        // --- FUNGSI MENDAPATKAN NAMA WILAYAH DENGAN INDIKATOR ---
         async function getNamaWilayah(lat, lon) {
+            const el = document.getElementById('lokasi-nama');
+            el.innerText = "📍 SEDANG MENCARI WILAYAH...";
             try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`, {
+                    headers: { 'User-Agent': 'MasjidDigitalApp/1.0' }
+                });
                 const data = await res.json();
-                // Mengambil nama desa, kelurahan, atau kota
                 const wilayah = data.address.village || data.address.suburb || data.address.city || data.address.town || "Lokasi Terdeteksi";
-                document.getElementById('lokasi-nama').innerText = `📍 LOKASI: ${wilayah.toUpperCase()}`;
+                el.innerText = `📍 LOKASI: ${wilayah.toUpperCase()}`;
             } catch (e) {
-                document.getElementById('lokasi-nama').innerText = "📍 LOKASI: GPS AKTIF";
+                el.innerText = "📍 LOKASI: GPS AKTIF";
             }
         }
 
-        // --- FUNGSI KALENDER ---
         async function bukaKalender() {
             const list = document.getElementById('isi-kalender');
             document.getElementById('modal-kalender').style.display = 'block';
             list.innerHTML = '<p class="text-center py-4 text-xs font-bold text-gray-400">Memuat Jadwal...</p>';
-            
             const namaHariIndo = { 'Sunday': 'Minggu', 'Monday': 'Senin', 'Tuesday': 'Selasa', 'Wednesday': 'Rabu', 'Thursday': 'Kamis', 'Friday': 'Jumat', 'Saturday': 'Sabtu' };
-
             try {
                 const now = new Date();
                 const res = await fetch(`https://api.aladhan.com/v1/calendar?latitude=${DEF_LAT}&longitude=${DEF_LON}&method=11&month=${now.getMonth()+1}&year=${now.getFullYear()}`);
                 const data = await res.json();
-                
                 let html = "";
                 data.data.forEach(tgl => {
                     const isToday = (new Date().getDate() == parseInt(tgl.date.gregorian.day)) ? 'bg-yellow-100 border-yellow-500' : 'bg-gray-50';
                     const hari = namaHariIndo[tgl.date.gregorian.weekday.en] || tgl.date.gregorian.weekday.en;
-                    
-                    html += `
-                    <div class="flex justify-between items-center p-2 rounded-xl border ${isToday}">
-                        <div class="text-left">
-                            <div class="text-[9px] font-bold text-gray-400 uppercase">${hari}</div>
-                            <div class="text-xs font-bold text-green-900">${tgl.date.readable}</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="arabic text-sm text-green-700 leading-none">${tgl.date.hijri.day} ${tgl.date.hijri.month.ar}</div>
-                            <div class="text-[9px] text-gray-400">${tgl.date.hijri.year} H</div>
-                        </div>
-                    </div>`;
+                    html += `<div class="flex justify-between items-center p-2 rounded-xl border ${isToday}"><div class="text-left"><div class="text-[9px] font-bold text-gray-400 uppercase">${hari}</div><div class="text-xs font-bold text-green-900">${tgl.date.readable}</div></div><div class="text-right"><div class="arabic text-sm text-green-700 leading-none">${tgl.date.hijri.day} ${tgl.date.hijri.month.ar}</div><div class="text-[9px] text-gray-400">${tgl.date.hijri.year} H</div></div></div>`;
                 });
                 list.innerHTML = html;
             } catch (e) { list.innerHTML = "Gagal mengambil data."; }
@@ -247,7 +242,6 @@
 
         function tutupKalender() { document.getElementById('modal-kalender').style.display = 'none'; }
 
-        // --- FUNGSI UTAMA ---
         function getLokasiOtomatis() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
@@ -255,12 +249,13 @@
                         const lat = p.coords.latitude;
                         const lon = p.coords.longitude;
                         fetchJadwal(lat, lon); 
-                        getNamaWilayah(lat, lon); // Mendeteksi nama wilayah
+                        getNamaWilayah(lat, lon); 
                     },
                     () => {
                         fetchJadwal(DEF_LAT, DEF_LON);
                         document.getElementById('lokasi-nama').innerText = "📍 BERO JAYA TIMUR (DEFAULT)";
-                    }
+                    },
+                    { enableHighAccuracy: true, timeout: 5000 }
                 );
             } else { 
                 fetchJadwal(DEF_LAT, DEF_LON);
