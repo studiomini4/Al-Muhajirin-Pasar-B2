@@ -41,6 +41,8 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
             cursor: pointer;
+            position: relative;
+            z-index: 10;
         }
 
         .card-glass {
@@ -54,7 +56,7 @@
             position: fixed;
             z-index: 1000;
             left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0,0,0,0.85);
             backdrop-filter: blur(5px);
         }
         .modal-body {
@@ -91,32 +93,37 @@
             100% { transform: translate(-100%, 0); }
         }
 
-        input[type=range] { -webkit-appearance: none; background: transparent; height: 15px; }
-        input[type=range]::-webkit-slider-runnable-track { background: #e2e8f0; height: 4px; border-radius: 2px; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; background: #064e3b; border-radius: 50%; margin-top: -5px; cursor: pointer; border: 1px solid #fbbf24; }
+        /* Styling Slider agar lebih mudah disentuh di HP */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; height: 30px; }
+        input[type=range]::-webkit-slider-runnable-track { background: #e2e8f0; height: 6px; border-radius: 3px; }
+        input[type=range]::-webkit-slider-thumb { 
+            -webkit-appearance: none; height: 20px; width: 20px; 
+            background: #064e3b; border-radius: 50%; margin-top: -7px; 
+            cursor: pointer; border: 2px solid #fbbf24; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
 
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #fbbf24; }
-        input:checked + .slider:before { transform: translateX(20px); }
+        .slider-toggle { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 24px; }
+        .slider-toggle:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider-toggle { background-color: #fbbf24; }
+        input:checked + .slider-toggle:before { transform: translateX(20px); }
         
         .tab-active { border-bottom: 4px solid #fbbf24; color: #064e3b; font-weight: 800; }
     </style>
 </head>
 <body class="pb-10 flex flex-col">
 
-    <audio id="adzanAudio" src="adzan.mp3" preload="auto"></audio>
+    <audio id="adzanAudio" src="adzan.mp3" preload="auto" crossorigin="anonymous"></audio>
 
     <div id="modal-kalender" onclick="tutupKalender()">
         <div class="modal-body shadow-2xl" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h2 class="font-bold text-green-900 uppercase text-xs">Kalender Bulanan</h2>
-                <button onclick="tutupKalender()" class="text-red-500 font-bold text-2xl">&times;</button>
+                <h2 class="font-bold text-green-900 uppercase text-xs">Jadwal Bulanan</h2>
+                <button onclick="tutupKalender()" class="text-red-500 font-bold text-2xl px-2">&times;</button>
             </div>
-            <div id="isi-kalender" class="space-y-2">
-                <p class="text-center text-xs text-gray-400 font-medium">Memuat data...</p>
+            <div id="isi-kalender" class="space-y-1">
+                <p class="text-center text-xs text-gray-400">Memuat data...</p>
             </div>
         </div>
     </div>
@@ -131,14 +138,14 @@
                 <p id="lokasi-nama" class="text-[10px] uppercase tracking-widest mt-2 text-yellow-200 font-bold">📍 Mendeteksi Wilayah...</p>
             </div>
             
-            <div onclick="bukaKalender()" class="glass-effect rounded-2xl py-3 px-4 inline-block min-w-[85%] active:scale-95 transition-transform">
+            <div onclick="bukaKalender()" class="glass-effect rounded-2xl py-4 px-6 inline-block min-w-[85%] active:scale-95 transition-transform shadow-inner">
                 <div id="tanggal-masehi" class="font-semibold text-sm uppercase">-- --- ----</div>
                 <div id="tanggal-hijriah" class="arabic text-xl text-yellow-300 mt-2">-- --- ----</div>
-                <p class="text-[8px] text-yellow-100 opacity-50 mt-1 uppercase italic font-bold">Klik untuk Kalender Sebulan</p>
+                <p class="text-[9px] text-yellow-100 opacity-70 mt-1 uppercase italic font-bold tracking-widest">Klik untuk Kalender Bulanan</p>
             </div>
 
             <div class="marquee-container">
-                <div id="hadits-text" class="marquee-text font-medium italic">Memuat Hadits Shahih Hari Ini...</div>
+                <div id="hadits-text" class="marquee-text font-medium italic">Memuat Hadits Shahih...</div>
             </div>
         </div>
     </header>
@@ -159,32 +166,27 @@
 
         <div id="section-profil" class="hidden">
             <div class="card-glass p-8 rounded-[2.5rem] shadow-xl">
-                <h2 class="text-2xl font-black text-green-900 mb-4 border-b-2 border-yellow-400 inline-block">Profil & Sejarah</h2>
-                <div class="text-gray-700 leading-relaxed space-y-4 text-sm sm:text-base">
-                    <p>Masjid Al-Muhajirin berlokasi di RT. 29 Dusun V Desa Bero Jaya Timur.</p>
-                </div>
+                <h2 class="text-2xl font-black text-green-900 mb-4 border-b-2 border-yellow-400 inline-block text-sm">Profil Masjid</h2>
+                <p class="text-sm leading-relaxed text-gray-700">Masjid Al-Muhajirin berlokasi di RT. 29 Dusun V Desa Bero Jaya Timur. Menjadi pusat ibadah dan kegiatan sosial masyarakat sekitar.</p>
             </div>
         </div>
-        
+
         <div id="section-quran" class="hidden">
-            <div class="mb-6 sticky top-2 z-10">
-                <select id="select-surah" onchange="loadAyat()" class="w-full p-4 rounded-xl border-2 border-green-600 font-bold text-green-900 shadow-xl bg-white uppercase">
-                    <option value="">Pilih Surah...</option>
-                </select>
-            </div>
-            <div id="quran-container" class="space-y-6"></div>
+            <select id="select-surah" onchange="loadAyat()" class="w-full p-4 mb-4 rounded-xl border-2 border-green-600 font-bold bg-white uppercase text-xs"></select>
+            <div id="quran-container" class="space-y-4"></div>
         </div>
 
         <div id="section-donasi" class="hidden">
             <div class="card-glass p-8 rounded-[2.5rem] shadow-xl text-center">
-                <h2 class="text-2xl font-black text-green-900 mb-2">Infaq & Sedekah</h2>
-                <p class="text-green-900 font-bold uppercase">BANK MANDIRI: 113 00 1956957 7</p>
+                <p class="text-xs font-bold text-gray-500 uppercase">Rekening Infaq</p>
+                <p class="text-xl font-black text-green-900 mt-2">BANK MANDIRI</p>
+                <p class="text-2xl font-black text-yellow-600">113 00 1956957 7</p>
             </div>
         </div>
     </main>
 
     <footer class="text-center py-6 mt-10">
-        <p class="text-white text-sm drop-shadow-md">Admin : <span class="text-yellow-400 font-bold">Jamil</span></p>
+        <p class="text-white text-xs drop-shadow-md opacity-80 uppercase tracking-widest">Admin Digital : <span class="text-yellow-400 font-bold">Jamil</span></p>
     </footer>
 
     <script>
@@ -192,26 +194,17 @@
         const DEF_LON = 103.7844;
         let jadwalHariIni = {};
         let alarmSettings = { Subuh: { active: true, volume: 1.0 }, Dzuhur: { active: true, volume: 1.0 }, Ashar: { active: true, volume: 1.0 }, Maghrib: { active: true, volume: 1.0 }, Isya: { active: true, volume: 1.0 } };
-        let currentPlayingSholat = null;
+        let currentActiveSholat = null;
 
-        // --- FUNGSI BARU: UNLOCK AUDIO ---
-        // Browser memblokir audio otomatis kecuali user pernah klik sesuatu.
-        document.body.addEventListener('click', function() {
+        // UNLOCK AUDIO UNTUK SEMUA BROWSER & HP
+        function unlockAudio() {
             const audio = document.getElementById('adzanAudio');
-            audio.play().then(() => {
-                audio.pause(); // Putar sebentar lalu pause untuk "memancing" izin browser
-            }).catch(e => {});
-        }, { once: true });
-
-        async function getNamaWilayah(lat, lon) {
-            const el = document.getElementById('lokasi-nama');
-            try {
-                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
-                const data = await res.json();
-                const wilayah = data.address.village || data.address.city || "Lokasi Terdeteksi";
-                el.innerText = `📍 LOKASI: ${wilayah.toUpperCase()}`;
-            } catch (e) { el.innerText = "📍 LOKASI AKTIF"; }
+            audio.play().then(() => { audio.pause(); }).catch(e => {});
+            document.removeEventListener('touchstart', unlockAudio);
+            document.removeEventListener('click', unlockAudio);
         }
+        document.addEventListener('click', unlockAudio);
+        document.addEventListener('touchstart', unlockAudio);
 
         async function fetchJadwal(lat, lon) {
             try {
@@ -227,19 +220,61 @@
         function displayJadwal(t) {
             const list = [{id:'Subuh',k:'Fajr'},{id:'Dzuhur',k:'Dhuhr'},{id:'Ashar',k:'Asr'},{id:'Maghrib',k:'Maghrib'},{id:'Isya',k:'Isha'}];
             document.getElementById('jadwal-container').innerHTML = list.map(s => `
-                <div class="card-glass p-4 rounded-3xl shadow-lg flex flex-col gap-3">
-                    <div class="flex justify-between items-center">
+                <div class="card-glass p-4 rounded-3xl shadow-lg">
+                    <div class="flex justify-between items-center mb-2">
                         <div class="flex items-center gap-4">
-                            <label class="switch"><input type="checkbox" checked onchange="alarmSettings['${s.id}'].active=this.checked"><span class="slider"></span></label>
-                            <div><p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">${s.id}</p><p class="text-3xl font-black text-green-900">${t[s.k]}</p></div>
+                            <label class="switch">
+                                <input type="checkbox" checked onchange="alarmSettings['${s.id}'].active=this.checked">
+                                <span class="slider-toggle"></span>
+                            </label>
+                            <div>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase">${s.id}</p>
+                                <p class="text-3xl font-black text-green-900">${t[s.k]}</p>
+                            </div>
                         </div>
-                        <button onclick="playAdzan('${s.id}')" class="bg-green-100 text-green-700 p-2 px-3 rounded-xl text-[10px] font-bold">TEST</button>
+                        <button onclick="playAdzan('${s.id}')" class="bg-green-100 text-green-700 p-2 px-4 rounded-xl text-[10px] font-extrabold shadow-sm active:bg-green-200">TEST</button>
                     </div>
-                    <div class="flex items-center gap-3 bg-white/50 p-2 rounded-xl border border-gray-100">
-                        <span class="text-[9px] font-bold text-gray-500">Vol</span>
-                        <input type="range" min="0" max="1" step="0.05" value="${alarmSettings[s.id].volume}" oninput="setVolume('${s.id}', this.value)" class="flex-grow">
+                    <div class="flex items-center gap-3 bg-white/60 p-2 rounded-xl border border-gray-100">
+                        <span class="text-[10px] font-black text-green-800 ml-1">VOL</span>
+                        <input type="range" min="0" max="1" step="0.01" value="${alarmSettings[s.id].volume}" 
+                            oninput="updateVol('${s.id}', this.value)" class="flex-grow touch-none">
                     </div>
                 </div>`).join('');
+        }
+
+        // FUNGSI VOLUME UNIVERSAL (DESKTOP & HP)
+        function updateVol(sholatId, val) {
+            const volumeValue = parseFloat(val);
+            alarmSettings[sholatId].volume = volumeValue;
+            
+            const audio = document.getElementById('adzanAudio');
+            // Jika audio sedang bunyi sholat ini, langsung ubah suaranya
+            if (currentActiveSholat === sholatId) {
+                audio.volume = volumeValue;
+            }
+        }
+
+        function playAdzan(sholatId) {
+            const audio = document.getElementById('adzanAudio');
+            currentActiveSholat = sholatId;
+            audio.volume = alarmSettings[sholatId].volume;
+            audio.currentTime = 0;
+            
+            const promise = audio.play();
+            if (promise !== undefined) {
+                promise.then(() => {
+                    document.getElementById('btnStop').classList.remove('hidden');
+                }).catch(e => {
+                    console.error("Autoplay diblokir browser");
+                });
+            }
+        }
+
+        function stopAdzan() {
+            const audio = document.getElementById('adzanAudio');
+            audio.pause();
+            currentActiveSholat = null;
+            document.getElementById('btnStop').classList.add('hidden');
         }
 
         function updateTime() {
@@ -248,60 +283,65 @@
             document.getElementById('jam').innerText = jamSekarang;
             document.getElementById('detik').innerText = now.getSeconds() + " detik";
             
-            // CEK ALARM SETIAP DETIK KE-0
             if (now.getSeconds() === 0) {
-                cekAlarm(jamSekarang);
+                const mapping = { "Fajr": "Subuh", "Dhuhr": "Dzuhur", "Asr": "Ashar", "Maghrib": "Maghrib", "Isha": "Isya" };
+                for (let key in mapping) { 
+                    if (jadwalHariIni[key] === jamSekarang && alarmSettings[mapping[key]].active) {
+                        playAdzan(mapping[key]); 
+                    } 
+                }
             }
         }
 
-        function cekAlarm(waktu) {
-            const mapping = { "Fajr": "Subuh", "Dhuhr": "Dzuhur", "Asr": "Ashar", "Maghrib": "Maghrib", "Isha": "Isya" };
-            for (let key in mapping) { 
-                // Jika waktu jadwal API sama dengan jam sekarang, dan alarm aktif
-                if (jadwalHariIni[key] === waktu && alarmSettings[mapping[key]].active) {
-                    console.log("WAKTUNYA ADZAN: " + mapping[key]);
-                    playAdzan(mapping[key]); 
-                } 
-            }
+        // FUNGSI KALENDER BULANAN (PERBAIKAN EDGE)
+        function bukaKalender() {
+            const modal = document.getElementById('modal-kalender');
+            modal.style.display = 'block';
+            const isi = document.getElementById('isi-kalender');
+            const d = new Date();
+            
+            isi.innerHTML = '<p class="text-center p-4">Mengambil data...</p>';
+            
+            fetch(`https://api.aladhan.com/v1/calendar?latitude=${DEF_LAT}&longitude=${DEF_LON}&method=11&month=${d.getMonth()+1}&year=${d.getFullYear()}`)
+                .then(res => res.json())
+                .then(json => {
+                    isi.innerHTML = json.data.map(day => `
+                        <div class="flex justify-between items-center p-2 border-b text-[10px] ${day.date.gregorian.day == d.getDate() ? 'bg-yellow-100 font-bold' : ''}">
+                            <div class="w-14">
+                                <span class="block">${day.date.gregorian.day} ${day.date.gregorian.month.en.substring(0,3)}</span>
+                                <span class="text-gray-400">${day.date.hijri.day} ${day.date.hijri.month.en.substring(0,3)}</span>
+                            </div>
+                            <div class="flex gap-2 text-green-900 font-medium">
+                                <span>S:${day.timings.Fajr.split(' ')[0]}</span>
+                                <span>D:${day.timings.Dhuhr.split(' ')[0]}</span>
+                                <span>A:${day.timings.Asr.split(' ')[0]}</span>
+                                <span>M:${day.timings.Maghrib.split(' ')[0]}</span>
+                                <span>I:${day.timings.Isha.split(' ')[0]}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                });
         }
 
-        function setVolume(sholatId, value) { 
-            alarmSettings[sholatId].volume = value; 
-            const audio = document.getElementById('adzanAudio');
-            if (currentPlayingSholat === sholatId) { audio.volume = value; }
-        }
+        function tutupKalender() { document.getElementById('modal-kalender').style.display = 'none'; }
 
-        function playAdzan(sholatId) {
-            const audio = document.getElementById('adzanAudio');
-            currentPlayingSholat = sholatId;
-            audio.volume = alarmSettings[sholatId].volume;
-            audio.currentTime = 0; // Mulai dari awal
-            audio.play().catch(e => console.log("Gagal putar otomatis: User harus klik layar sekali dulu."));
-            document.getElementById('btnStop').classList.remove('hidden');
-        }
-
-        function stopAdzan() {
-            const audio = document.getElementById('adzanAudio');
-            audio.pause(); 
-            currentPlayingSholat = null;
-            document.getElementById('btnStop').classList.add('hidden');
-        }
-
-        // Jalankan fungsi dasar
-        updateTime();
+        // STARTUP
         setInterval(updateTime, 1000);
+        updateTime();
         navigator.geolocation.getCurrentPosition(p => {
             fetchJadwal(p.coords.latitude, p.coords.longitude);
-            getNamaWilayah(p.coords.latitude, p.coords.longitude);
         }, () => fetchJadwal(DEF_LAT, DEF_LON));
+
+        // TAB SYSTEM
+        function switchTab(t){['sholat','profil','quran','donasi'].forEach(s=>{document.getElementById(`section-${s}`).classList.add('hidden');document.getElementById(`btn-${s}`).classList.remove('tab-active')});document.getElementById(`section-${t}`).classList.remove('hidden');document.getElementById(`btn-${t}`).classList.add('tab-active')}
         
-        // Fungsi profil, hadits, quran tetap sama seperti sebelumnya
+        // HADITS & QURAN
+        async function fetchDailyHadits(){try{const d=new Date().getDate();const r=await fetch(`https://api.hadits.gading.dev/books/bukhari/${d+20}`);const j=await r.json();document.getElementById('hadits-text').innerText=`HADITS: "${j.data.contents.id}"`}catch(e){}}
+        async function initQuran(){try{const r=await fetch('https://equran.id/api/v2/surat');const j=await r.json();const s=document.getElementById('select-surah');s.innerHTML = '<option value="">Pilih Surah...</option>';j.data.forEach(x=>{s.innerHTML+=`<option value="${x.nomor}">${x.nomor}. ${x.namaLatin}</option>`})}catch(e){}}
+        async function loadAyat(){const n=document.getElementById('select-surah').value;if(!n)return;const c=document.getElementById('quran-container');c.innerHTML='<p class="text-white text-xs">Memuat ayat...</p>';const r=await fetch(`https://equran.id/api/v2/surat/${n}`);const j=await r.json();c.innerHTML=j.data.ayat.map(a=>`<div class="card-glass p-4 rounded-2xl"><p class="arabic text-right text-xl">${a.teksArab}</p><p class="text-[10px] mt-2 text-gray-600">${a.teksIndonesia}</p></div>`).join('')}
+        
         fetchDailyHadits();
         initQuran();
-        function switchTab(t){['sholat','profil','quran','donasi'].forEach(s=>{document.getElementById(`section-${s}`).classList.add('hidden');document.getElementById(`btn-${s}`).classList.remove('tab-active')});document.getElementById(`section-${t}`).classList.remove('hidden');document.getElementById(`btn-${t}`).classList.add('tab-active')}
-        async function fetchDailyHadits(){try{const d=new Date().getDate();const r=await fetch(`https://api.hadits.gading.dev/books/bukhari/${d+20}`);const j=await r.json();document.getElementById('hadits-text').innerText=`HADITS: "${j.data.contents.id}"`}catch(e){}}
-        async function initQuran(){try{const r=await fetch('https://equran.id/api/v2/surat');const j=await r.json();const s=document.getElementById('select-surah');j.data.forEach(x=>{s.innerHTML+=`<option value="${x.nomor}">${x.nomor}. ${x.namaLatin}</option>`})}catch(e){}}
-        async function loadAyat(){const n=document.getElementById('select-surah').value;if(!n)return;const c=document.getElementById('quran-container');c.innerHTML='<p class="text-white">Memuat...</p>';const r=await fetch(`https://equran.id/api/v2/surat/${n}`);const j=await r.json();c.innerHTML=j.data.ayat.map(a=>`<div class="card-glass p-4 rounded-2xl mb-2"><p class="arabic text-right text-2xl">${a.teksArab}</p><p class="text-xs mt-2">${a.teksIndonesia}</p></div>`).join('')}
     </script>
 </body>
 </html>
