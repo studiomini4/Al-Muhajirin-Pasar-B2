@@ -195,6 +195,9 @@
     <script>
         const DEF_LAT = -2.3658;
         const DEF_LON = 103.7844;
+        let currentLat = DEF_LAT; // Variabel baru untuk GPS harian & kalender
+        let currentLon = DEF_LON; // Variabel baru untuk GPS harian & kalender
+
         let jadwalHariIni = {};
         let alarmSettings = { Subuh: { active: true, volume: 1.0 }, Dzuhur: { active: true, volume: 1.0 }, Ashar: { active: true, volume: 1.0 }, Maghrib: { active: true, volume: 1.0 }, Isya: { active: true, volume: 1.0 } };
 
@@ -208,7 +211,8 @@
 
             try {
                 const now = new Date();
-                const res = await fetch(`https://api.aladhan.com/v1/calendar?latitude=${DEF_LAT}&longitude=${DEF_LON}&method=11&month=${now.getMonth()+1}&year=${now.getFullYear()}`);
+                // Menggunakan currentLat/currentLon agar kalender sinkron dengan GPS
+                const res = await fetch(`https://api.aladhan.com/v1/calendar?latitude=${currentLat}&longitude=${currentLon}&method=11&month=${now.getMonth()+1}&year=${now.getFullYear()}`);
                 const data = await res.json();
                 
                 let html = "";
@@ -238,7 +242,12 @@
         function getLokasiOtomatis() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
-                    async (p) => { fetchJadwal(p.coords.latitude, p.coords.longitude); document.getElementById('lokasi-nama').innerText = "📍 LOKASI: GPS AKTIF"; },
+                    async (p) => { 
+                        currentLat = p.coords.latitude; 
+                        currentLon = p.coords.longitude;
+                        fetchJadwal(currentLat, currentLon); 
+                        document.getElementById('lokasi-nama').innerText = "📍 LOKASI: GPS AKTIF"; 
+                    },
                     () => fetchJadwal(DEF_LAT, DEF_LON)
                 );
             } else { fetchJadwal(DEF_LAT, DEF_LON); }
