@@ -35,7 +35,7 @@
             border-radius: 1.5rem;
             cursor: pointer;
         }
-        #modal-kalender {
+        #modal-kalender, #modal-iklan {
             display: none;
             position: fixed;
             z-index: 1000;
@@ -43,7 +43,9 @@
             background-color: rgba(0,0,0,0.85);
             backdrop-filter: blur(5px);
         }
-        .modal-body { background: white; margin: 10% auto; padding: 20px; width: 90%; max-width: 400px; border-radius: 24px; color: #1a1a1a; }
+        /* Penyesuaian Modal Body untuk Gambar 9:16 */
+        .modal-body { background: white; margin: 2% auto; width: 90%; max-width: 340px; border-radius: 24px; color: #1a1a1a; overflow: hidden; }
+        
         .marquee-container { background: rgba(0, 0, 0, 0.4); color: #fbbf24; padding: 10px 0; overflow: hidden; white-space: nowrap; border-radius: 12px; }
         .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 60s linear infinite; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
@@ -57,12 +59,28 @@
     <audio id="adzanAudio" src="adzan.mp3" preload="auto"></audio>
 
     <div id="modal-kalender" onclick="tutupKalender()">
-        <div class="modal-body shadow-2xl" onclick="event.stopPropagation()">
+        <div class="modal-body shadow-2xl !p-5" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h2 class="font-bold uppercase text-xs">Kalender Bulanan</h2>
+                <h2 id="judul-kalender" class="font-bold uppercase text-sm text-gray-700">Kalender</h2>
                 <button onclick="tutupKalender()" class="text-red-500 font-bold text-2xl">&times;</button>
             </div>
-            <div id="isi-kalender" class="space-y-2 overflow-y-auto max-h-[60vh]"></div>
+            <div id="isi-kalender" class="space-y-2 overflow-y-auto max-h-[70vh]"></div>
+        </div>
+    </div>
+
+    <div id="modal-iklan" onclick="tutupIklan()">
+        <div class="modal-body shadow-2xl !p-0 !bg-transparent" onclick="event.stopPropagation()">
+            <div class="relative w-full overflow-hidden rounded-[2rem] bg-white">
+                <button onclick="tutupIklan()" class="absolute top-4 right-4 bg-black/60 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold z-20 text-xl">&times;</button>
+                
+                <div class="w-full flex flex-col">
+                    <img src="iklan.gif" alt="Donasi" class="w-full h-auto object-contain bg-gray-200">
+                    
+                    <div class="p-4 bg-white">
+                        <button onclick="switchTab('donasi'); tutupIklan();" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest shadow-lg transition-colors">Infaq Sekarang</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -132,9 +150,10 @@
     </footer>
 
     <script>
-        // UPDATE: Koordinat presisi Bero Jaya Timur
         const DEF_LAT = -2.302610, DEF_LON = 104.072998;
         let currentLat = DEF_LAT, currentLon = DEF_LON, jadwalHariIni = {};
+        let activeTab = 'sholat'; 
+        let iklanMuncul = false;
         let alarmSettings = { Subuh: { active: true, vol: 1.0 }, Dzuhur: { active: true, vol: 1.0 }, Jumat: { active: true, vol: 1.0 }, Ashar: { active: true, vol: 1.0 }, Maghrib: { active: true, vol: 1.0 }, Isya: { active: true, vol: 1.0 } };
 
         function toArabicDigits(num) {
@@ -159,7 +178,6 @@
 
         async function fetchJadwal(lat, lon) {
             try {
-                // Method 11 (Singapore/Kemenag)
                 const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
                 const json = await res.json();
                 jadwalHariIni = json.data.timings;
@@ -263,6 +281,7 @@
         }
 
         function switchTab(tab) {
+            activeTab = tab; 
             ['sholat', 'profil', 'quran', 'donasi'].forEach(t => {
                 document.getElementById(`section-${t}`).classList.add('hidden');
                 document.getElementById(`btn-${t}`).classList.add('opacity-50');
@@ -295,8 +314,48 @@
             cont.innerHTML = j.data.ayat.map(a => `<div class="glass-card p-6 mb-4"><p class="arabic text-2xl text-yellow-300 text-right mb-4">${a.teksArab}</p><p class="text-xs italic opacity-70 mb-2">${a.teksLatin}</p><p class="text-xs font-semibold">${a.teksIndonesia}</p></div>`).join('');
         }
 
+        function bukaKalender() {
+            const cont = document.getElementById('isi-kalender');
+            const now = new Date();
+            const bln = now.getMonth();
+            const thn = now.getFullYear();
+            const namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            document.getElementById('judul-kalender').innerText = `Kalender ${namaBulan[bln]} ${thn}`;
+            const jumlahHari = new Date(thn, bln + 1, 0).getDate();
+            let html = `<div class="grid grid-cols-1 gap-2">`;
+            for (let i = 1; i <= jumlahHari; i++) {
+                const tgl = new Date(thn, bln, i);
+                const formatTgl = tgl.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+                const isToday = i === now.getDate() ? 'bg-yellow-100 border-yellow-400 ring-2 ring-yellow-400' : 'bg-gray-50 border-gray-200';
+                html += `<div class="p-3 ${isToday} border rounded-xl flex justify-between items-center"><span class="text-[11px] font-bold text-gray-700">${formatTgl}</span><span class="text-[10px] text-gray-400 font-mono">${i}/${bln+1}/${thn}</span></div>`;
+            }
+            html += `</div>`;
+            cont.innerHTML = html;
+            document.getElementById('modal-kalender').style.display = 'block';
+        }
+
         function tutupKalender() { document.getElementById('modal-kalender').style.display = 'none'; }
-        function bukaKalender() { document.getElementById('modal-kalender').style.display = 'block'; }
+
+        // LOGIKA IKLAN DONASI
+        function bukaIklan() {
+            if (!iklanMuncul && activeTab !== 'quran') {
+                document.getElementById('modal-iklan').style.display = 'block';
+                iklanMuncul = true;
+                setTimeout(() => { iklanMuncul = false; }, 60000); 
+            }
+        }
+
+        function tutupIklan() { 
+            document.getElementById('modal-iklan').style.display = 'none'; 
+        }
+
+        window.onscroll = function() {
+            if (activeTab !== 'quran') {
+                if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 20) {
+                    bukaIklan();
+                }
+            }
+        };
 
         window.onload = () => {
             getLokasi(); updateTime(); setInterval(updateTime, 1000); fetchDailyHadits();
