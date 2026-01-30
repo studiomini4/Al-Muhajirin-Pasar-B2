@@ -35,7 +35,7 @@
             border-radius: 1.5rem;
             cursor: pointer;
         }
-        /* Style Modal & Tombol APK */
+        
         #modal-kalender, #modal-iklan, #modal-apk {
             display: none;
             position: fixed;
@@ -53,21 +53,9 @@
         input[type=range] { -webkit-appearance: none; background: transparent; }
         input[type=range]::-webkit-slider-runnable-track { background: rgba(255,255,255,0.3); height: 3px; border-radius: 2px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; background: #fbbf24; border-radius: 50%; margin-top: -5px; cursor: pointer; border: 1px solid white; }
-
-        .btn-apk-float {
-            fixed bottom-6 right-6 z-[999] bg-yellow-500 text-black p-2 rounded-2xl shadow-2xl flex items-center gap-2 animate-bounce;
-        }
     </style>
 </head>
-<body class="pb-24 flex flex-col"> <div onclick="bukaModalAPK()" class="fixed bottom-6 right-6 z-[999] bg-yellow-500 text-black p-3 rounded-2xl shadow-2xl flex items-center gap-2 cursor-pointer border-2 border-white/50">
-        <div class="bg-black text-white p-2 rounded-xl">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zM12 17l4-4h-3V7h-2v6H8l4 4z"/></svg>
-        </div>
-        <div class="flex flex-col leading-tight">
-            <span class="text-[8px] font-black opacity-70 uppercase">Android App</span>
-            <span class="text-[11px] font-black uppercase">Download APK</span>
-        </div>
-    </div>
+<body class="pb-24 flex flex-col">
 
     <div id="modal-apk" onclick="tutupModalAPK()">
         <div class="modal-body shadow-2xl !p-6" onclick="event.stopPropagation()">
@@ -80,7 +68,7 @@
                     "sebelum menginstall aplikasi harap perhatikan hal berikut : aplikasi 100% aman dari virus, bila terdeteksi sebagai ancaman abaikan saja, itu terjadi karena aplikasi belum terdaftar di playstore google. Aplikasi ini berdiri sendiri. jika tetap berkenan lanjutkan tekan download"
                 </p>
                 <div class="flex flex-col gap-2">
-                    <a href="Masjid Al Muhajirin Dsn V B2_1_1.0.apk" download class="bg-yellow-500 text-black font-extrabold py-4 rounded-xl text-xs uppercase tracking-widest shadow-md">Lanjutkan Download</a>
+                    <a href="Masjid Al Muhajirin Dsn V B2_1_1.0.apk" download class="bg-yellow-500 text-black font-extrabold py-4 rounded-xl text-xs uppercase tracking-widest shadow-md text-center">Lanjutkan Download</a>
                     <button onclick="tutupModalAPK()" class="text-gray-400 text-[10px] font-bold py-2 uppercase tracking-widest">Batal</button>
                 </div>
             </div>
@@ -89,31 +77,12 @@
 
     <audio id="adzanAudio" src="adzan.mp3" preload="auto"></audio>
 
-    <div id="modal-kalender" onclick="tutupKalender()">
-        <div class="modal-body shadow-2xl !p-5" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h2 id="judul-kalender" class="font-bold uppercase text-sm text-gray-700">Kalender</h2>
-                <button onclick="tutupKalender()" class="text-red-500 font-bold text-2xl">&times;</button>
-            </div>
-            <div id="isi-kalender" class="space-y-2 overflow-y-auto max-h-[70vh]"></div>
-        </div>
-    </div>
-
-    <div id="modal-iklan" onclick="tutupIklan()">
-        <div class="modal-body shadow-2xl !p-0 !bg-transparent" onclick="event.stopPropagation()">
-            <div class="relative w-full overflow-hidden rounded-[2rem] bg-white">
-                <button onclick="tutupIklan()" class="absolute top-4 right-4 bg-black/60 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold z-20 text-xl">&times;</button>
-                <div class="w-full flex flex-col">
-                    <img src="iklan.gif" alt="Donasi" class="w-full h-auto object-contain bg-gray-200">
-                    <div class="p-4 bg-white">
-                        <button onclick="switchTab('donasi'); tutupIklan();" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest shadow-lg transition-colors">Infaq Sekarang</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <header class="islamic-header p-8 rounded-b-[3rem] shadow-2xl text-center relative mx-2 mt-2">
+        <div onclick="bukaModalAPK()" class="absolute top-4 right-4 bg-yellow-500/20 hover:bg-yellow-500/40 border border-yellow-400/50 text-yellow-400 px-3 py-1.5 rounded-full cursor-pointer transition-all active:scale-95 flex items-center gap-2">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zM12 17l4-4h-3V7h-2v6H8l4 4z"/></svg>
+            <span class="text-[9px] font-bold uppercase tracking-tighter">Unduh Aplikasi</span>
+        </div>
+
         <h1 class="text-3xl font-bold mb-1 uppercase tracking-wider">MASJID AL MUHAJIRIN</h1>
         <p class="text-yellow-400 text-sm font-semibold italic mb-4">Pasar B2, RT. 29 Dusun V Desa Bero Jaya Timur</p>
         <div class="mb-6">
@@ -168,6 +137,30 @@
         <p class="text-[10px] opacity-70">Sumber: aladhan.com | Admin Web: <span class="text-yellow-400 font-bold">Jamil</span></p>
     </footer>
 
+    <div id="modal-kalender" onclick="tutupKalender()">
+        <div class="modal-body shadow-2xl !p-5" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h2 id="judul-kalender" class="font-bold uppercase text-sm text-gray-700">Kalender</h2>
+                <button onclick="tutupKalender()" class="text-red-500 font-bold text-2xl">&times;</button>
+            </div>
+            <div id="isi-kalender" class="space-y-2 overflow-y-auto max-h-[70vh]"></div>
+        </div>
+    </div>
+
+    <div id="modal-iklan" onclick="tutupIklan()">
+        <div class="modal-body shadow-2xl !p-0 !bg-transparent" onclick="event.stopPropagation()">
+            <div class="relative w-full overflow-hidden rounded-[2rem] bg-white">
+                <button onclick="tutupIklan()" class="absolute top-4 right-4 bg-black/60 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold z-20 text-xl">&times;</button>
+                <div class="w-full flex flex-col">
+                    <img src="iklan.gif" alt="Donasi" class="w-full h-auto object-contain bg-gray-200">
+                    <div class="p-4 bg-white">
+                        <button onclick="switchTab('donasi'); tutupIklan();" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest shadow-lg transition-colors">Infaq Sekarang</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const DEF_LAT = -2.302610, DEF_LON = 104.072998;
         let currentLat = DEF_LAT, currentLon = DEF_LON, jadwalHariIni = {};
@@ -175,14 +168,9 @@
         let iklanMuncul = false;
         let alarmSettings = { Subuh: { active: true, vol: 1.0 }, Dzuhur: { active: true, vol: 1.0 }, Jumat: { active: true, vol: 1.0 }, Ashar: { active: true, vol: 1.0 }, Maghrib: { active: true, vol: 1.0 }, Isya: { active: true, vol: 1.0 } };
 
-        // FUNGSI BARU APK
         function bukaModalAPK() { document.getElementById('modal-apk').style.display = 'block'; }
         function tutupModalAPK() { document.getElementById('modal-apk').style.display = 'none'; }
-
-        function toArabicDigits(num) {
-            const id = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-            return num.toString().replace(/[0-9]/g, w => id[+w]);
-        }
+        function toArabicDigits(num) { const id = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩']; return num.toString().replace(/[0-9]/g, w => id[+w]); }
 
         function getLokasi() {
             if (navigator.geolocation) {
@@ -339,4 +327,3 @@
     </script>
 </body>
 </html>
-
