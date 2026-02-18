@@ -7,69 +7,69 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
+        :root { --gold: #fbbf24; }
         body {
             font-family: 'Inter', sans-serif;
-            background-image: url('belakang.webp');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('belakang.webp') center/cover no-repeat fixed;
             min-height: 100vh;
             color: white;
+            -webkit-overflow-scrolling: touch;
         }
-        .arabic { font-family: 'Amiri', serif; line-height: 1.5; }
-        
-        .islamic-header {
-            background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('belakang.webp');
-            background-size: cover;
-            background-position: center;
-            backdrop-filter: blur(10px);
-            border-bottom: 3px solid #fbbf24;
-            position: relative;
-        }
-
+        .arabic { font-family: 'Amiri', serif; }
         .glass-card {
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 1.5rem;
-            cursor: pointer;
         }
-        
-        #modal-kalender, #modal-iklan, #modal-apk {
+        .islamic-header {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid var(--gold);
+        }
+        .marquee-container {
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--gold);
+            overflow: hidden;
+            border-radius: 12px;
+        }
+        .marquee-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 30s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        .modal {
             display: none;
             position: fixed;
+            inset: 0;
             z-index: 1000;
-            left: 0; top: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.85);
             backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
         }
-        .modal-body { background: white; margin: 2% auto; width: 90%; max-width: 340px; border-radius: 24px; color: #1a1a1a; overflow: hidden; }
-        
-        .marquee-container { background: rgba(0, 0, 0, 0.4); color: #fbbf24; padding: 10px 0; overflow: hidden; white-space: nowrap; border-radius: 12px; }
-        .marquee-text { display: inline-block; padding-left: 100%; animation: marquee 60s linear infinite; }
-        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
-        
-        input[type=range] { -webkit-appearance: none; background: transparent; }
-        input[type=range]::-webkit-slider-runnable-track { background: rgba(255,255,255,0.3); height: 3px; border-radius: 2px; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 14px; width: 14px; background: #fbbf24; border-radius: 50%; margin-top: -5px; cursor: pointer; border: 1px solid white; }
+        input[type=range] { -webkit-appearance: none; background: rgba(255,255,255,0.2); height: 4px; border-radius: 5px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 16px; width: 16px; background: var(--gold); border-radius: 50%; cursor: pointer; }
     </style>
 </head>
-<body class="pb-24 flex flex-col">
+<body class="pb-24">
 
-    <div id="modal-apk" onclick="tutupModalAPK()">
-        <div class="modal-body shadow-2xl !p-6" onclick="event.stopPropagation()">
+    <div id="modal-apk" class="modal" onclick="tutupModal('modal-apk')">
+        <div class="bg-white w-[90%] max-w-[340px] rounded-[24px] p-6 text-gray-800 shadow-2xl" onclick="event.stopPropagation()">
             <div class="text-center">
                 <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 </div>
-                <h3 class="font-bold text-lg mb-2">Harap Baca Dahulu</h3>
-                <p class="text-xs leading-relaxed text-gray-500 mb-6 italic">
-                    "sebelum menginstall aplikasi harap perhatikan hal berikut : aplikasi 100% aman dari virus, bila terdeteksi sebagai ancaman abaikan saja, itu terjadi karena aplikasi belum terdaftar di playstore google. Aplikasi ini berdiri sendiri. jika tetap berkenan lanjutkan tekan download"
-                </p>
+                <h3 class="font-bold text-lg mb-2">Keamanan Aplikasi</h3>
+                <p class="text-[11px] leading-relaxed text-gray-500 mb-6 italic">Aplikasi ini aman. Abaikan peringatan Play Protect saat instalasi karena aplikasi dikembangkan secara mandiri.</p>
                 <div class="flex flex-col gap-2">
-                    <a href="Masjid Al Muhajirin Dsn V B2_1_1.0.apk" download class="bg-yellow-500 text-black font-extrabold py-4 rounded-xl text-xs uppercase tracking-widest shadow-md text-center">Lanjutkan Download</a>
-                    <button onclick="tutupModalAPK()" class="text-gray-400 text-[10px] font-bold py-2 uppercase tracking-widest">Batal</button>
+                    <a href="Masjid Al Muhajirin Dsn V B2_1_1.0.apk" download class="bg-yellow-500 text-white font-bold py-3 rounded-xl shadow-lg uppercase text-xs">Download APK</a>
+                    <button onclick="tutupModal('modal-apk')" class="text-gray-400 text-xs py-2 uppercase font-bold">Tutup</button>
                 </div>
             </div>
         </div>
@@ -77,253 +77,249 @@
 
     <audio id="adzanAudio" src="adzan.mp3" preload="auto"></audio>
 
-    <header class="islamic-header p-8 rounded-b-[3rem] shadow-2xl text-center relative mx-2 mt-2">
-        <div onclick="bukaModalAPK()" class="absolute top-4 right-4 bg-yellow-500/20 hover:bg-yellow-500/40 border border-yellow-400/50 text-yellow-400 px-3 py-1.5 rounded-full cursor-pointer transition-all active:scale-95 flex items-center gap-2">
-            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zM12 17l4-4h-3V7h-2v6H8l4 4z"/></svg>
-            <span class="text-[9px] font-bold uppercase tracking-tighter">Unduh Aplikasi</span>
+    <header class="islamic-header p-6 rounded-b-[2.5rem] shadow-2xl text-center relative mx-2 mt-2">
+        <button onclick="bukaModal('modal-apk')" class="absolute top-4 right-4 bg-yellow-500/20 border border-yellow-400/50 text-yellow-400 px-3 py-1 rounded-full text-[9px] font-bold uppercase transition-transform active:scale-95">
+            UNDUH APK
+        </button>
+
+        <h1 class="text-2xl font-black mb-1 tracking-tighter uppercase">Masjid Al Muhajirin</h1>
+        <p class="text-yellow-400 text-[9px] font-bold mb-4 opacity-90 tracking-widest uppercase text-center px-4">
+            Pasar B2, RT. 29 Dusun V Bero Jaya Timur
+        </p>
+        
+        <div class="mb-5">
+            <p id="jam" class="text-7xl font-black tracking-tighter tabular-nums text-white">00:00</p>
+            
+            <div class="flex items-center justify-center gap-1 mt-1 opacity-70">
+                <svg class="w-2.5 h-2.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                <p id="lokasi-nama" class="text-[8px] font-bold uppercase tracking-widest">Mencari Wilayah...</p>
+            </div>
+
+            <div id="next-sholat-countdown" class="text-[10px] font-bold text-yellow-300 tracking-[0.15em] mt-2 bg-white/10 py-1 px-4 rounded-full inline-block uppercase italic">--:--:-- Menuju Adzan</div>
         </div>
 
-        <h1 class="text-3xl font-bold mb-1 uppercase tracking-wider">MASJID AL MUHAJIRIN</h1>
-        <p class="text-yellow-400 text-sm font-semibold italic mb-4">Pasar B2, RT. 29 Dusun V Desa Bero Jaya Timur</p>
-        <div class="mb-6">
-            <p id="jam" class="text-7xl font-extrabold tracking-tighter drop-shadow-lg">00:00</p>
-            <div class="flex flex-col items-center mt-2">
-                <p id="next-sholat-countdown" class="text-sm font-bold text-yellow-300 uppercase tracking-widest">--:--:-- MENUJU ADZAN</p>
-                <p id="lokasi-nama" class="text-[9px] uppercase tracking-widest mt-2 text-yellow-100 font-bold opacity-70">📍 Mendeteksi Lokasi...</p>
+        <div class="glass-card py-3 px-6 inline-block w-full max-w-[280px] active:scale-95 transition-all cursor-pointer border-yellow-500/30">
+            <div id="tanggal-masehi" class="text-[10px] uppercase font-bold opacity-60">-- --- ----</div>
+            <div id="tanggal-hijriah" class="arabic text-xl text-yellow-400 mt-1">-- --- ----</div>
+        </div>
+
+        <div class="marquee-container mt-4 py-2">
+            <div id="hadits-text" class="marquee-text font-bold italic text-[11px] uppercase tracking-wide">
+                DONASIKAN HARTA TERBAIK ANDA UNTUK KEMAKMURAN MASJID &nbsp;&nbsp;&nbsp; • &nbsp;&nbsp;&nbsp; DONASIKAN HARTA TERBAIK ANDA UNTUK KEMAKMURAN MASJID &nbsp;&nbsp;&nbsp; • &nbsp;&nbsp;&nbsp;
             </div>
-        </div>
-        <div onclick="bukaKalender()" class="glass-card py-3 px-4 inline-block min-w-[85%] active:scale-95 transition-transform">
-            <div id="tanggal-masehi" class="font-semibold text-xs uppercase opacity-80">-- --- ----</div>
-            <div id="tanggal-hijriah" class="arabic text-xl text-yellow-300 mt-1">-- --- ----</div>
-        </div>
-        <div class="marquee-container mt-4">
-            <div id="hadits-text" class="marquee-text font-medium italic text-xs uppercase tracking-wide">Memuat Hadits Shahih Bukhari...</div>
         </div>
     </header>
 
-    <main class="max-w-2xl mx-auto mt-6 px-4 flex-grow w-full">
-        <button onclick="stopAdzan()" id="btnStop" class="hidden w-full mb-6 bg-red-600 text-white py-4 rounded-2xl font-bold animate-pulse shadow-lg uppercase text-xs">Hentikan Suara Adzan</button>
-        <div class="flex justify-around mb-6 glass-card overflow-hidden text-[10px]">
-            <button onclick="switchTab('sholat')" id="btn-sholat" class="flex-1 py-4 uppercase border-b-4 border-yellow-400 font-bold">Jadwal</button>
-            <button onclick="switchTab('profil')" id="btn-profil" class="flex-1 py-4 uppercase opacity-50">Profil</button>
-            <button onclick="switchTab('quran')" id="btn-quran" class="flex-1 py-4 uppercase opacity-50">Al-Qur'an</button>
-            <button onclick="switchTab('donasi')" id="btn-donasi" class="flex-1 py-4 uppercase opacity-50">Donasi</button>
-        </div>
-        <div id="section-sholat" class="space-y-3"><div id="jadwal-container" class="grid grid-cols-1 gap-3"></div></div>
-        <div id="section-profil" class="hidden glass-card p-8">
-            <h2 class="text-2xl font-black text-yellow-400 mb-4 border-b border-white/20 inline-block">Profil Masjid</h2>
-            <div class="text-sm leading-relaxed space-y-4">
-                <p>Masjid Al-Muhajirin berlokasi di RT. 29 Dusun V Desa Bero Jaya Timur.</p>
-                <p>Masjid ini sudah berdiri sejak 20 tahun yang lalu di atas tanah waqaf keluarga Bapak Sarno, dengan berlandaskan ketaqwaan kepada Allah Subhanahuwata'ala.</p>
-            </div>
-        </div>
-        <div id="section-quran" class="hidden">
-            <select id="select-surah" onchange="loadAyat()" class="w-full p-4 rounded-xl bg-white/10 border border-white/30 text-white font-bold mb-4 uppercase text-xs">
-                <option value="" class="text-black">Pilih Surah...</option>
+    <main class="max-w-xl mx-auto mt-6 px-4">
+        <button onclick="stopAdzan()" id="btnStop" class="hidden w-full mb-6 bg-red-600 text-white py-4 rounded-2xl font-bold animate-pulse shadow-lg text-xs uppercase tracking-widest">Hentikan Suara Adzan</button>
+
+        <nav class="flex justify-around mb-6 glass-card p-1.5 text-[10px] font-bold">
+            <button onclick="switchTab('sholat')" id="btn-sholat" class="flex-1 py-3 rounded-2xl bg-yellow-500 text-black transition-all">JADWAL</button>
+            <button onclick="switchTab('profil')" id="btn-profil" class="flex-1 py-3 rounded-2xl opacity-60 transition-all">PROFIL</button>
+            <button onclick="switchTab('quran')" id="btn-quran" class="flex-1 py-3 rounded-2xl opacity-60 transition-all">QUR'AN</button>
+            <button onclick="switchTab('donasi')" id="btn-donasi" class="flex-1 py-3 rounded-2xl opacity-60 transition-all">DONASI</button>
+        </nav>
+
+        <section id="section-sholat" class="space-y-3">
+            <div id="jadwal-container" class="grid gap-3"></div>
+        </section>
+
+        <section id="section-profil" class="hidden glass-card p-6 text-sm leading-relaxed">
+            <h2 class="text-lg font-bold text-yellow-400 mb-3 uppercase border-b border-white/10 pb-2">Profil Masjid</h2>
+            <p class="opacity-90">Masjid Al-Muhajirin berlokasi di RT. 29 Dusun V Desa Bero Jaya Timur. Berdiri sejak 20 tahun yang lalu di atas tanah waqaf keluarga Bapak Sarno.</p>
+        </section>
+
+        <section id="section-quran" class="hidden">
+            <select id="select-surah" onchange="loadAyat()" class="w-full p-4 rounded-xl bg-black/40 border border-white/20 text-white text-sm mb-4 outline-none">
+                <option value="">Pilih Surah...</option>
             </select>
             <div id="quran-container" class="space-y-4"></div>
-        </div>
-        <div id="section-donasi" class="hidden glass-card p-8 text-center">
-            <h2 class="text-xl font-bold mb-4">Infaq & Sedekah</h2>
+        </section>
+
+        <section id="section-donasi" class="hidden glass-card p-8 text-center">
+            <h3 class="text-sm font-bold text-yellow-400 mb-4 uppercase tracking-widest">Infaq & Sedekah</h3>
             <div class="bg-black/20 p-6 rounded-2xl border border-white/10">
-                <p class="text-[10px] text-yellow-400 font-bold uppercase mb-2">BANK MANDIRI</p>
-                <p class="text-2xl font-black tracking-tighter mb-2">113 00 1956957 7</p>
-                <p class="text-sm uppercase font-bold">MASJID AL MUHAJIRIN</p>
+                <p class="text-[10px] opacity-60 mb-1">BANK MANDIRI</p>
+                <p class="text-2xl font-black text-yellow-400">113 00 1956957 7</p>
+                <p class="text-xs mt-2 font-bold">MASJID AL MUHAJIRIN</p>
             </div>
-        </div>
+        </section>
     </main>
 
-    <footer class="text-center py-10">
-        <p class="text-[10px] opacity-70">Sumber: aladhan.com | Admin Web: <span class="text-yellow-400 font-bold">Jamil</span></p>
+    <footer class="text-center py-10 opacity-40 text-[9px] uppercase tracking-[0.3em]">
+        aladhan.com | Developer: Jamil
     </footer>
-
-    <div id="modal-kalender" onclick="tutupKalender()">
-        <div class="modal-body shadow-2xl !p-5" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h2 id="judul-kalender" class="font-bold uppercase text-sm text-gray-700">Kalender</h2>
-                <button onclick="tutupKalender()" class="text-red-500 font-bold text-2xl">&times;</button>
-            </div>
-            <div id="isi-kalender" class="space-y-2 overflow-y-auto max-h-[70vh]"></div>
-        </div>
-    </div>
-
-    <div id="modal-iklan" onclick="tutupIklan()">
-        <div class="modal-body shadow-2xl !p-0 !bg-transparent" onclick="event.stopPropagation()">
-            <div class="relative w-full overflow-hidden rounded-[2rem] bg-white">
-                <button onclick="tutupIklan()" class="absolute top-4 right-4 bg-black/60 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold z-20 text-xl">&times;</button>
-                <div class="w-full flex flex-col">
-                    <img src="iklan.gif" alt="Donasi" class="w-full h-auto object-contain bg-gray-200">
-                    <div class="p-4 bg-white">
-                        <button onclick="switchTab('donasi'); tutupIklan();" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-4 rounded-2xl font-bold uppercase text-xs tracking-widest shadow-lg transition-colors">Infaq Sekarang</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script>
         const DEF_LAT = -2.302610, DEF_LON = 104.072998;
-        let currentLat = DEF_LAT, currentLon = DEF_LON, jadwalHariIni = {};
-        let activeTab = 'sholat'; 
-        let iklanMuncul = false;
-        let alarmSettings = { Subuh: { active: true, vol: 1.0 }, Dzuhur: { active: true, vol: 1.0 }, Jumat: { active: true, vol: 1.0 }, Ashar: { active: true, vol: 1.0 }, Maghrib: { active: true, vol: 1.0 }, Isya: { active: true, vol: 1.0 } };
+        let jadwalHariIni = {};
+        let isTesting = false;
 
-        function bukaModalAPK() { document.getElementById('modal-apk').style.display = 'block'; }
-        function tutupModalAPK() { document.getElementById('modal-apk').style.display = 'none'; }
-        function toArabicDigits(num) { const id = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩']; return num.toString().replace(/[0-9]/g, w => id[+w]); }
+        function bukaModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function tutupModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        function getLokasi() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(p => {
-                    currentLat = p.coords.latitude; currentLon = p.coords.longitude;
-                    document.getElementById('lokasi-nama').innerText = "📍 LOKASI: GPS AKTIF (OTOMATIS)";
-                    fetchJadwal(currentLat, currentLon);
-                }, () => {
-                    document.getElementById('lokasi-nama').innerText = "📍 LOKASI: BERO JAYA TIMUR (DEFAULT)";
-                    fetchJadwal(DEF_LAT, DEF_LON);
-                });
-            } else { fetchJadwal(DEF_LAT, DEF_LON); }
-        }
+        const toArabicDigits = (str) => {
+            const id = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+            return str.toString().replace(/[0-9]/g, (w) => id[w]);
+        };
 
-        async function fetchJadwal(lat, lon) {
+        async function fetchJadwal(lat, lon, isDefault = false) {
             try {
-                const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11`);
+                // Adjustment diatur ke -2 untuk mengoreksi error 2 Ramadhan menjadi 1 Ramadhan
+                const res = await fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=11&adjustment=-2&v=${new Date().getTime()}`);
                 const json = await res.json();
                 jadwalHariIni = json.data.timings;
-                document.getElementById('tanggal-hijriah').innerText = `${toArabicDigits(json.data.date.hijri.day)} ${json.data.date.hijri.month.ar} ${toArabicDigits(json.data.date.hijri.year)} هـ`;
+                
+                const wilayahLabel = isDefault ? "Wilayah: Bero Jaya Timur" : `Wilayah: Lokasi Anda (${lat.toFixed(2)}, ${lon.toFixed(2)})`;
+                document.getElementById('lokasi-nama').innerText = wilayahLabel;
                 document.getElementById('tanggal-masehi').innerText = json.data.date.readable;
-                displayJadwal(jadwalHariIni);
-            } catch (e) { console.error("Gagal memuat jadwal"); }
+                
+                const h = json.data.date.hijri;
+                const tglArab = toArabicDigits(h.day);
+                const thnArab = toArabicDigits(h.year);
+                document.getElementById('tanggal-hijriah').innerText = `${tglArab} ${h.month.ar} ${thnArab} H`;
+                
+                displayJadwal();
+            } catch (e) { 
+                document.getElementById('lokasi-nama').innerText = "Gagal Memuat Jadwal";
+            }
         }
 
-        function displayJadwal(t) {
-            const isJumat = new Date().getDay() === 5;
-            const list = [{id:'Subuh',k:'Fajr'}, {id:isJumat?'Jumat':'Dzuhur',k:'Dhuhr'}, {id:'Ashar',k:'Asr'}, {id:'Maghrib',k:'Maghrib'}, {id:'Isya',k:'Isha'}];
-            document.getElementById('jadwal-container').innerHTML = list.map(s => {
-                const key = (s.id === 'Jumat') ? 'Dzuhur' : s.id;
-                const active = alarmSettings[key].active;
-                return `
-                <div onclick="stopAdzan()" class="glass-card p-5 flex justify-between items-center transition-all active:bg-white/20">
+        function displayJadwal() {
+            const list = [
+                {id:'Imsyak', k:'Imsak', color:'text-blue-300', hasAdzan: false},
+                {id:'Subuh', k:'Fajr', color:'text-yellow-400', hasAdzan: true}, 
+                {id:new Date().getDay()===5?'Jumat':'Dzuhur', k:'Dhuhr', color:'text-yellow-400', hasAdzan: true},
+                {id:'Ashar', k:'Asr', color:'text-yellow-400', hasAdzan: true}, 
+                {id:'Maghrib', k:'Maghrib', color:'text-yellow-400', hasAdzan: true}, 
+                {id:'Isya', k:'Isha', color:'text-yellow-400', hasAdzan: true}
+            ];
+            
+            document.getElementById('jadwal-container').innerHTML = list.map(s => `
+                <div class="glass-card p-4 flex justify-between items-center">
                     <div>
-                        <p class="text-[10px] uppercase font-bold text-yellow-400 opacity-80">${s.id}</p>
-                        <p class="text-3xl font-black">${t[s.k]}</p>
+                        <p class="text-[9px] uppercase font-bold ${s.color} opacity-80">${s.id}</p>
+                        <p class="text-3xl font-black tabular-nums tracking-tight text-white">${jadwalHariIni[s.k] || '--:--'}</p>
                     </div>
-                    <div class="flex items-center gap-4" onclick="event.stopPropagation()">
-                        <div class="flex flex-col items-end gap-2">
-                            <div class="flex items-center gap-2">
-                                <span class="text-[8px] font-bold opacity-50 uppercase">Tes Vol</span>
-                                <input type="range" min="0" max="1" step="0.1" value="${alarmSettings[key].vol}" oninput="testVolume('${key}', this.value)" class="w-16">
-                            </div>
-                            <button onclick="toggleAdzan('${key}')" class="flex items-center gap-2">
-                                <span class="text-[10px] font-bold">${active?'ON':'OFF'}</span>
-                                <svg class="w-7 h-7 ${active?'text-yellow-400':'text-white/20'}" fill="currentColor" viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-                            </button>
+                    ${s.hasAdzan ? `
+                    <div class="flex items-center gap-3">
+                        <div class="flex flex-col items-end">
+                            <input type="range" min="0" max="1" step="0.1" value="0.8" oninput="setVolume(this.value)" class="w-12 h-1">
+                            <span class="text-[7px] text-white/40 uppercase mt-1">Vol</span>
                         </div>
-                    </div>
-                </div>`;
-            }).join('');
+                        <button onclick="toggleTestAdzan(this)" class="bg-yellow-500/20 border border-yellow-400/50 p-2 rounded-xl active:scale-90 transition-all">
+                            <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                            </svg>
+                        </button>
+                    </div>` : ''}
+                </div>
+            `).join('');
         }
 
-        function testVolume(key, val) {
-            alarmSettings[key].vol = val;
-            const a = document.getElementById('adzanAudio');
-            a.volume = val;
-            if (a.paused) { a.play(); document.getElementById('btnStop').classList.remove('hidden'); }
+        function toggleTestAdzan(btn) {
+            const audio = document.getElementById('adzanAudio');
+            if (!isTesting) {
+                audio.play();
+                isTesting = true;
+                btn.classList.add('bg-red-500/40', 'border-red-500');
+                btn.innerHTML = `<svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>`;
+            } else {
+                audio.pause(); audio.currentTime = 0;
+                isTesting = false;
+                displayJadwal(); 
+            }
         }
 
-        function toggleAdzan(key) { alarmSettings[key].active = !alarmSettings[key].active; displayJadwal(jadwalHariIni); }
+        function setVolume(v) { document.getElementById('adzanAudio').volume = v; }
 
         function updateTime() {
             const now = new Date();
-            const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
-            document.getElementById('jam').innerText = jam;
-            if (now.getSeconds() === 0) cekAlarm(jam);
-            updateCountdown();
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).replace('.', ':');
+            document.getElementById('jam').innerText = timeStr;
+            if (now.getSeconds() === 0) cekAlarm(timeStr);
+            renderCountdown(now);
         }
 
-        function updateCountdown() {
+        function renderCountdown(now) {
             if (!jadwalHariIni.Fajr) return;
-            const now = new Date();
-            const list = [{n:'Subuh', t:jadwalHariIni.Fajr}, {n:'Dzuhur', t:jadwalHariIni.Dhuhr}, {n:'Ashar', t:jadwalHariIni.Asr}, {n:'Maghrib', t:jadwalHariIni.Maghrib}, {n:'Isya', t:jadwalHariIni.Isha}];
+            const prayers = [
+                {n:'Imsyak', t:jadwalHariIni.Imsak}, {n:'Subuh', t:jadwalHariIni.Fajr},
+                {n:'Dzuhur', t:jadwalHariIni.Dhuhr}, {n:'Ashar', t:jadwalHariIni.Asr},
+                {n:'Maghrib', t:jadwalHariIni.Maghrib}, {n:'Isya', t:jadwalHariIni.Isha}
+            ];
             let next = null;
-            for (let s of list) {
-                const [h, m] = s.t.split(':');
+            for (let p of prayers) {
+                const [h, m] = p.t.split(':');
                 const d = new Date(); d.setHours(h, m, 0);
                 if (d > now) { next = d; break; }
             }
-            if (!next) { const [h, m] = list[0].t.split(':'); next = new Date(); next.setDate(next.getDate()+1); next.setHours(h, m, 0); }
+            if (!next) { 
+                const [h, m] = prayers[1].t.split(':');
+                next = new Date(); next.setDate(next.getDate() + 1); next.setHours(h, m, 0); 
+            }
             const diff = next - now;
-            const hh = Math.floor(diff/3600000), mm = Math.floor((diff%3600000)/60000), ss = Math.floor((diff%60000)/1000);
-            document.getElementById('next-sholat-countdown').innerText = `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')} MENUJU ADZAN`;
+            const hh = String(Math.floor(diff/3600000)).padStart(2,'0');
+            const mm = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+            const ss = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+            document.getElementById('next-sholat-countdown').innerText = `${hh}:${mm}:${ss} Menuju Adzan`;
         }
 
-        function cekAlarm(w) {
-            const map = {"Fajr":"Subuh","Dhuhr":"Dzuhur","Asr":"Ashar","Maghrib":"Maghrib","Isha":"Isya"};
-            for(let k in map) { if(jadwalHariIni[k] === w && alarmSettings[map[k]].active) { const a = document.getElementById('adzanAudio'); a.volume = alarmSettings[map[k]].vol; a.play(); document.getElementById('btnStop').classList.remove('hidden'); } }
+        function cekAlarm(timeStr) {
+            const target = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+            target.forEach(k => {
+                if(jadwalHariIni[k] === timeStr) {
+                    const a = document.getElementById('adzanAudio');
+                    a.play();
+                    document.getElementById('btnStop').classList.remove('hidden');
+                }
+            });
         }
 
-        function stopAdzan() { const a = document.getElementById('adzanAudio'); a.pause(); a.currentTime = 0; document.getElementById('btnStop').classList.add('hidden'); }
+        function stopAdzan() { 
+            const a = document.getElementById('adzanAudio'); 
+            a.pause(); a.currentTime = 0; 
+            document.getElementById('btnStop').classList.add('hidden'); 
+        }
 
         function switchTab(tab) {
-            activeTab = tab; 
             ['sholat', 'profil', 'quran', 'donasi'].forEach(t => {
                 document.getElementById(`section-${t}`).classList.add('hidden');
-                document.getElementById(`btn-${t}`).classList.add('opacity-50');
-                document.getElementById(`btn-${t}`).classList.remove('border-b-4', 'border-yellow-400', 'font-bold');
+                const btn = document.getElementById(`btn-${t}`);
+                btn.classList.replace('bg-yellow-500', 'opacity-60');
+                btn.classList.remove('text-black');
             });
             document.getElementById(`section-${tab}`).classList.remove('hidden');
-            document.getElementById(`btn-${tab}`).classList.remove('opacity-50');
-            document.getElementById(`btn-${tab}`).classList.add('border-b-4', 'border-yellow-400', 'font-bold');
+            const activeBtn = document.getElementById(`btn-${tab}`);
+            activeBtn.classList.replace('opacity-60', 'bg-yellow-500');
+            activeBtn.classList.add('text-black');
         }
 
-        async function fetchDailyHadits() {
-            try {
-                const randomNum = Math.floor(Math.random() * 100) + 1;
-                const res = await fetch(`https://api.hadits.gading.dev/books/bukhari/${randomNum}`);
-                const j = await res.json();
-                document.getElementById('hadits-text').innerText = `Hadits hari ini: "${j.data.contents.id}" (HR. Bukhari)`;
-            } catch(e) { document.getElementById('hadits-text').innerText = "Hadits hari ini: \"Sampaikanlah dariku walau satu ayat.\" (HR. Bukhari)"; }
-        }
+        window.onload = () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => { fetchJadwal(pos.coords.latitude, pos.coords.longitude, false); },
+                    () => { fetchJadwal(DEF_LAT, DEF_LON, true); }
+                );
+            } else {
+                fetchJadwal(DEF_LAT, DEF_LON, true);
+            }
+            setInterval(updateTime, 1000);
+            fetch('https://equran.id/api/v2/surat').then(r=>r.json()).then(d=>{
+                const sel = document.getElementById('select-surah');
+                d.data.forEach(s => { sel.innerHTML += `<option value="${s.nomor}">${s.nomor}. ${s.namaLatin}</option>`; });
+            });
+        };
 
         async function loadAyat() {
             const no = document.getElementById('select-surah').value;
             const cont = document.getElementById('quran-container');
-            if (!no) { cont.innerHTML = ''; return; }
-            cont.innerHTML = '<p class="text-center animate-pulse">Memuat Ayat...</p>';
+            if (!no) return;
+            cont.innerHTML = '<p class="text-center text-xs opacity-50">Membuka...</p>';
             const res = await fetch(`https://equran.id/api/v2/surat/${no}`);
             const j = await res.json();
-            cont.innerHTML = j.data.ayat.map(a => `<div class="glass-card p-6 mb-4"><p class="arabic text-2xl text-yellow-300 text-right mb-4">${a.teksArab}</p><p class="text-xs italic opacity-70 mb-2">${a.teksLatin}</p><p class="text-xs font-semibold">${a.teksIndonesia}</p></div>`).join('');
+            cont.innerHTML = j.data.ayat.map(a => `<div class="glass-card p-6 mb-4"><p class="arabic text-2xl text-yellow-400 text-right mb-4">${a.teksArab}</p><p class="text-xs font-semibold">${a.teksIndonesia}</p></div>`).join('');
         }
-
-        function bukaKalender() {
-            const cont = document.getElementById('isi-kalender');
-            const now = new Date();
-            const bln = now.getMonth(); const thn = now.getFullYear();
-            const namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-            document.getElementById('judul-kalender').innerText = `Kalender ${namaBulan[bln]} ${thn}`;
-            const jumlahHari = new Date(thn, bln + 1, 0).getDate();
-            let html = `<div class="grid grid-cols-1 gap-2">`;
-            for (let i = 1; i <= jumlahHari; i++) {
-                const tgl = new Date(thn, bln, i);
-                const formatTgl = tgl.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
-                const isToday = i === now.getDate() ? 'bg-yellow-100 border-yellow-400 ring-2 ring-yellow-400' : 'bg-gray-50 border-gray-200';
-                html += `<div class="p-3 ${isToday} border rounded-xl flex justify-between items-center"><span class="text-[11px] font-bold text-gray-700">${formatTgl}</span><span class="text-[10px] text-gray-400 font-mono">${i}/${bln+1}/${thn}</span></div>`;
-            }
-            html += `</div>`; cont.innerHTML = html; document.getElementById('modal-kalender').style.display = 'block';
-        }
-
-        function tutupKalender() { document.getElementById('modal-kalender').style.display = 'none'; }
-        function bukaIklan() { if (!iklanMuncul && activeTab !== 'quran') { document.getElementById('modal-iklan').style.display = 'block'; iklanMuncul = true; setTimeout(() => { iklanMuncul = false; }, 60000); } }
-        function tutupIklan() { document.getElementById('modal-iklan').style.display = 'none'; }
-
-        window.onscroll = function() { if (activeTab !== 'quran') { if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 20) { bukaIklan(); } } };
-
-        window.onload = () => {
-            getLokasi(); updateTime(); setInterval(updateTime, 1000); fetchDailyHadits();
-            fetch('https://equran.id/api/v2/surat').then(r=>r.json()).then(d=>{
-                d.data.forEach(s=>{document.getElementById('select-surah').innerHTML += `<option value="${s.nomor}" class="text-black">${s.nomor}. ${s.namaLatin}</option>`;});
-            });
-        };
     </script>
 </body>
 </html>
